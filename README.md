@@ -224,3 +224,27 @@ Caso dê um dislike em um post que tenha dado like, o dislike sobrescreve o like
 - caso não exista um registro na tabela de relação, é porque a pessoa não deu like nem dislike
 - caso dê like em um post que já tenha dado like, o like é removido (deleta o item da tabela)
 - caso dê dislike em um post que já tenha dado dislike, o dislike é removido (deleta o item da tabela)
+
+-------------------------------------------------------------------------------
+FALTA  Documentação Postman de todos os endpoints (obrigatória para correção)
+
+Endpoints
+ ok signup -feito
+ ok login feito
+ ok create post -feito
+ ok get posts -feito
+ ok edit post -feito
+ ok delete post -feito
+ FALTA like / dislike post
+ 
+ FALTA Autenticação e autorização
+
+ identificação UUID
+ senhas hasheadas com Bcrypt
+ tokens JWT
+ Código
+
+ OK POO
+ OK Arquitetura em camadas
+ OK Roteadores no Express
+ README.md
