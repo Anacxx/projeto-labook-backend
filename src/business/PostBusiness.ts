@@ -1,20 +1,26 @@
 import { PostDatabase } from "../database/PostDatabase";
 import { UserDatabase } from "../database/UserDatabase";
 import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/createPost.dto";
+import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/deletePost.dto";
+import { EditPostInputDTO, EditPostOutputDTO } from "../dtos/editPost.dto";
 import { GetPostsInputDTO, GetPostsOutputDTO } from "../dtos/getPosts.dto";
+import { BadRequestError } from "../errors/BadRequestError";
+import { NotFoundError } from "../errors/NotFoundError";
 import { Post, PostModel } from "../models/Post";
 
 export class PostBusiness {
-  // recebe o input da controller e devolve a informaçao
+  constructor(
+    private postDatabase: PostDatabase
+  ){}
+     //Com DTO PRONTO FUNCIONANDO
     public getAllPosts = async (input: GetPostsInputDTO): Promise<GetPostsOutputDTO> => {
-          const postDatabase = new PostDatabase()
-          const postsDB = await postDatabase.getAllPosts()
+          const postsDB = await this.postDatabase.getAllPosts()
           const postsModel: PostModel[] = []
           for (let postDB of postsDB){
             const userDatabase = new UserDatabase()
             const creatorDB = await userDatabase.findUserById(postDB.creator_id)
             if(!creatorDB){
-                throw new Error("Usuário não encontrado")
+                throw new NotFoundError("User not found")
             }
             const post = new Post(
               postDB.id,
@@ -31,15 +37,13 @@ export class PostBusiness {
           const output: GetPostsOutputDTO = postsModel
           return output
       };
-
+       //Com DTO PRONTO FUNCIONANDO.
       public createPost = async (input: CreatePostInputDTO): Promise<CreatePostOutputDTO> => {
-          // recebe o input da controller
           const { id, creator_id,content } = input 
-          //Faz conexão com o Database
           const userDatabase = new UserDatabase()
           const creatorDB = await userDatabase.findUserById(creator_id)
           if(!creatorDB){
-              throw new Error("Usuário não encontrado")
+              throw new NotFoundError("User not found")
           }
           const post = new Post(
             id,
@@ -51,53 +55,53 @@ export class PostBusiness {
             creatorDB.id,
             creatorDB.name
           )
-          const postDatabase = new PostDatabase()
-          await postDatabase.insertPost(post.toPostDB())
-          const output = undefined
+          await this.postDatabase.insertPost(post.toPostDB())
+          const output: CreatePostOutputDTO = undefined
           return output
       };
-      public editPost = async (input: any) => {
+      //Com DTO PRONTO FUNCIONANDO
+      public editPost = async (input: EditPostInputDTO): Promise<EditPostOutputDTO> => {
           const { id, content } = input;
-          const postDatabase = new PostDatabase();
     
-          const existingPost = await postDatabase.getPostById(id);
+          const existingPost = await this.postDatabase.getPostById(id);
           if (!existingPost) {
-            throw new Error('Post not found'); // Throw an error if the post with the given id doesn't exist
+            throw new NotFoundError('Post not found'); 
           }
     
-          // Update the post content and set the updatedAt timestamp
           existingPost.content = content;
           existingPost.updatedAt = new Date().toISOString();
+          await this.postDatabase.updatePost(existingPost);
     
-          // Save the updated post to the database using the updatePost method
-          await postDatabase.updatePost(existingPost);
-    
-          const output = undefined;
+          const output: EditPostOutputDTO = undefined;
           return output;
       };
-      public deletePost = async (id: string) => {
-          const postDatabase = new PostDatabase()
-          const existingPost = await postDatabase.getPostById(id);
-          if(!existingPost) {
-            throw new Error('Post not found')
-          }
-          await postDatabase.deletePost(id)
+      //Com DTO PRONTO FUNCIONANDO
+      public deletePost = async (input: DeletePostInputDTO): Promise<DeletePostOutputDTO> => {
+        const existingPost = await this.postDatabase.getPostById(input.id);
+        if (!existingPost) {
+          throw new NotFoundError('Post not found');
+        }
+        await this.postDatabase.deletePost(input.id);
+        const output: DeletePostOutputDTO = {
+          message: 'Post deleted successfully',
+        };
+        return output;
       };
+      // NÃO FUNCIONA
       public likeDislikePost = async (input: any) => {
         const { user_id, post_id, like } = input;
     
         if (like !== true && like !== false) {
-          throw new Error('Invalid like value. Use true for like or false for dislike.');
+          throw new BadRequestError('Invalid like value. Use true for like or false for dislike.');
         }
-    
-        const postDatabase = new PostDatabase();
-          const post = await postDatabase.getPostById(post_id);
+
+          const post = await this.postDatabase.getPostById(post_id);
           if (!post) {
-            throw new Error('Post not found');
+            throw new NotFoundError('Post not found');
           }
     
-        await postDatabase.handleLikeDislike(user_id, post_id, like);
-        const output = {
+        await this.postDatabase.handleLikeDislike(user_id, post_id, like);
+        const output: DeletePostOutputDTO = {
           message: `Post ${like ? 'liked' : 'disliked'} successfully`
         }
         return output

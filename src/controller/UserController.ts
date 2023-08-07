@@ -1,68 +1,60 @@
 import { Request, Response } from "express";
 import { UserBusiness } from "../business/UserBusiness";
+import { BaseError } from "../errors/BaseError";
+import { ZodError } from "zod";
+import { SignupOutputDTO, SignupSchema } from "../dtos/signup.dto";
+import { LoginSchema } from "../dtos/login.dto";
 
 export class UserController{
-        //Funcionando ok
+    constructor(
+      private userBusiness: UserBusiness
+    ){}
+    //FUNCIONANDO OK
     public signup = async (req: Request, res: Response) => {
         try {
-        const input = {
+        const input = SignupSchema.parse({
             id: req.body.id,
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
             role: req.body.role
-        }
-        const userBusiness = new UserBusiness()
-        const output = await userBusiness.signup(input)
-    
+        })
+        const output: SignupOutputDTO  = await this.userBusiness.signup(input)
         return res.status(201).send(output);
         } catch (error) {
             console.log(error)
-    
-            if (req.statusCode === 200) {
-                res.status(500)
-            }
-    
-            if (error instanceof Error) {
-                res.send(error.message)
+
+            if (error instanceof BaseError) {
+              res.status(error.statusCode).send(error.message)
+            } else if (error instanceof ZodError) {
+              res.status(400).send(error.issues)
             } else {
-                res.send("Unexpected error")
+              res.status(500).send("Unexpected error")
             }
         }
     };
-        //responsavel por receber o input!
-        //responsabel por mandar input p/ a business
-        //somente a business que faz conexão com o banco de dados.
-        // a business deve buscar no db e devolver a resposta para controller
-        //controler só mostra o resultado
+    //MUDAR A INTERFACE DE OUTPUT -- ERRADOOOOOOOOO
     public login = async (req: Request, res: Response) => {
         try {
-            //recebendo o input da requisição
-            const input = { 
+            const input = LoginSchema.parse({ 
                 email: req.body.email, 
                 password: req.body.password
-                }
-            //enviando para a business o input
-            const userBusiness = new UserBusiness()
-            //recebendo da business o resultado da busca no BD
-            const output = await userBusiness.login(input)
-            //Verificando se existe dentro do BD um EMAIL E SENHA que correspondem.
+          })
+
+            const output: Boolean = await this.userBusiness.login(input)
             if (!output) {
             return res.status(401).send('Invalid email or password');
             }
-    
             return res.status(200).send('Login successful');
         } catch (error) {
             console.log(error)
-    
-            if (req.statusCode === 200) {
-                res.status(500)
-            }
-    
-            if (error instanceof Error) {
-                res.send(error.message)
+
+            if (error instanceof BaseError) {
+              res.status(error.statusCode).send(error.message)
+            } else if (error instanceof ZodError) {
+              res.status(400).send(error.issues)
             } else {
-                res.send("Unexpected error")
+              res.status(500).send("Unexpected error")
             }
         }
         }

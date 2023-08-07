@@ -3,7 +3,6 @@ import { BaseDatabase } from "./BaseDatabase";
 
 export class PostDatabase extends BaseDatabase{
     public static TABLE_POSTS = "posts"
-
     public async getAllPosts() {
         const posts = await BaseDatabase.connection(PostDatabase.TABLE_POSTS).select();
         return posts

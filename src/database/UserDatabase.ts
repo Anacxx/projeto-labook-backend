@@ -2,6 +2,7 @@ import { UserDB } from "../types";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class UserDatabase extends BaseDatabase {
+
     public static TABLE_USERS = "users"
     public async insertUser(newUser: UserDB) {
         await BaseDatabase.connection(UserDatabase.TABLE_USERS).insert(newUser)

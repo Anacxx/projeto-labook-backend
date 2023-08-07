@@ -1,12 +1,17 @@
 import { UserDatabase } from "../database/UserDatabase"
+import { LoginInputDTO, LoginOutputDTO } from "../dtos/login.dto"
+import { SignupInputDTO, SignupOutputDTO } from "../dtos/signup.dto"
 import { User } from "../models/User"
 import { UserDB } from "../types"
 
 export class UserBusiness{
-    public signup = async (input: any) => {
+    constructor(
+        private userDatabase: UserDatabase
+    ){}
+    //FUNCIONANDO OK
+    public signup = async (input: SignupInputDTO): Promise<SignupOutputDTO> => {
         const {id, name, email, password, role} = input 
-        const userDatabase = new UserDatabase()
-        const userDBExists = await userDatabase.findUserById(id)
+        const userDBExists = await this.userDatabase.findUserById(id)
         if(userDBExists){
             throw new Error('Essa Id já existe')
         }
@@ -24,8 +29,8 @@ export class UserBusiness{
             password: newUser.getPassword(),
             role: newUser.getRole()
         }
-        await userDatabase.insertUser(newUserDB)
-        const output = {
+        await this.userDatabase.insertUser(newUserDB)
+        const output: SignupOutputDTO = {
             message: 'Usuário cadastrado com sucesso',
             user: {
                 id: newUser.getId(),
@@ -34,13 +39,10 @@ export class UserBusiness{
         }
         return output
     }
-    
-    //responsavel por se conectar com o banco de dados
-    //responsavel por receber a resposta do BD e mandar para a controller.
-    public login = async (input: any): Promise<boolean> => {
+        //MUDAR A INTERFACE DE OUTPUT -- ERRADOOOOOOOOO
+    public login = async (input: LoginInputDTO): Promise<Boolean> => {
             const { email, password } = input;
-            const userDatabase = new UserDatabase()
-            const isValidCredentials = await userDatabase.validateUserCredentials(email,password)
+            const isValidCredentials = await this.userDatabase.validateUserCredentials(email,password)
           if (!isValidCredentials) {
             return false;
           }else{
