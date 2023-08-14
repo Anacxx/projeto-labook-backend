@@ -1,20 +1,23 @@
 
 import { Response, Request } from "express";
-import { GetPostsInputDTO, GetPostsOutputDTO } from "../dtos/getPosts.dto";
+import { GetPostsOutputDTO, GetPostsSchema } from "../dtos/posts/getPosts.dto";
 import { PostBusiness } from "../business/PostBusiness";
-import { CreatePostOutputDTO, CreatePostSchema } from "../dtos/createPost.dto";
+import { CreatePostSchema } from "../dtos/posts/createPost.dto";
 import { BaseError } from "../errors/BaseError";
 import { ZodError } from "zod";
-import { EditPostSchema } from "../dtos/editPost.dto";
-import { DeletePostInputDTO, DeletePostOutputDTO, DeletePostSchema } from "../dtos/deletePost.dto";
+import { EditPostSchema } from "../dtos/posts/editPost.dto";
+import { DeletePostSchema } from "../dtos/posts/deletePost.dto";
+import { LikeDislikeSchema } from "../dtos/posts/likeDislike.dto";
 export class PostController{
     constructor(
       private postBusiness: PostBusiness
     ){}
-        // Com DTO PRONTO FUNCIONANDO
+
       public getAllPosts = async (req: Request, res: Response) => {
         try {
-          const input: GetPostsInputDTO = undefined
+          const input = GetPostsSchema.parse({
+            token: req.headers.authorization
+          })
 
           const output: GetPostsOutputDTO = await this.postBusiness.getAllPosts(input)
           return res.status(200).send(output);
@@ -30,16 +33,15 @@ export class PostController{
           }
         }
       };
-      // Com DTO PRONTO FUNCIONANDO
+
       public createPost = async (req: Request, res: Response) => {
         try {
           const input = CreatePostSchema.parse({ 
-            id: req.body.id, 
-            creator_id: req.body.creator_id, 
+            token: req.headers.authorization, 
             content: req.body.content 
           })
 
-          const output:CreatePostOutputDTO = await this.postBusiness.createPost(input)
+          const output = await this.postBusiness.createPost(input)
           return res.status(201).send(output);
         } catch (error) {
           console.log(error)
@@ -53,12 +55,13 @@ export class PostController{
           }
         }
       };
-      //Com DTO PRONTO FUNCIONANDO
+
       public editPost = async (req: Request, res: Response) => {
         try {
           const input = EditPostSchema.parse({
-            id: req.params.id,
-            content: req.body.content
+            token: req.headers.authorization,
+            idToEdit: req.params.id,
+            content: req.body.content,
           })
 
           await this.postBusiness.editPost(input)
@@ -74,13 +77,14 @@ export class PostController{
           }
         }
       };
-      //Com DTO PRONTO FUNCIONANDO
+
       public deletePost = async (req: Request, res: Response) => {
         try {
-          const input: DeletePostInputDTO = {
+          const input = DeletePostSchema.parse({
+            token: req.headers.authorization,
             id: req.params.id,
-          }
-          const output: DeletePostOutputDTO = await this.postBusiness.deletePost(input)
+          })
+          const output = await this.postBusiness.deletePost(input)
           return res.status(200).send(output);
         } catch (error) {
           console.log(error)
@@ -93,17 +97,17 @@ export class PostController{
           }
         }
       };
-      // NÃO FUNCIONA TUDO ERRADO
+
       public likeDislikePost = async (req: Request, res: Response) => {
         try {
-          const input = {
-             user_id: req.body.user_id,
-             post_id: req.params.post_id,
-             like: req.body.like
-           }
+          const input = LikeDislikeSchema.parse({
+            token: req.headers.authorization,
+            postId: req.params.id,
+            like: req.body.like,
+          })
 
           const output = await this.postBusiness.likeDislikePost(input);
-          return res.status(200).send(output);
+          res.status(200).send(output)
         } catch (error) {
           console.log(error)
 

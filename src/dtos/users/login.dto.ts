@@ -5,10 +5,11 @@ export interface LoginInputDTO {
 }
 
 export interface LoginOutputDTO {
-    isValid: boolean;
+    message: string,
+    token: string
 }
 
 export const LoginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(4), // Ajuste o comprimento mínimo conforme necessário
-});
+}).transform(data => data as LoginInputDTO)

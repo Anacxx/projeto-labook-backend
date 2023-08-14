@@ -1,10 +1,33 @@
+export enum USER_ROLES {
+    NORMAL = "NORMAL",
+    ADMIN = "ADMIN"
+  }
+  export interface TokenPayload {
+    id: string,
+	name: string,
+    role: USER_ROLES
+}
+export interface UserDB {
+    id: string,
+    name: string,
+    email: string,
+    password: string,
+    role: USER_ROLES
+}
+
+export interface UserModel {
+    id: string,
+    name: string,
+    email: string,
+    role: USER_ROLES
+}
 export class User {    
     constructor(
         private id: string,
         private name: string,
         private email: string,
         private password: string,
-        private role: string
+        private role: USER_ROLES
     ) {}
 
     public getId(): string {
@@ -38,12 +61,29 @@ export class User {
     public setPassword(value: string): void {
         this.password = value
     }
-    public getRole(): string {
+    public getRole(): USER_ROLES {
         return this.role
     }
 
-    public setRole(value: string): void {
+    public setRole(value: USER_ROLES): void {
         this.role = value
+    }
+    public toDBModel():UserDB {
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.name,
+            password: this.password,
+            role: this.role
+        }
+    }
+    public toModel():UserModel {
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.name,
+            role: this.role   
+        }
     }
 }
 

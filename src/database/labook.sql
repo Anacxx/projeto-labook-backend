@@ -8,21 +8,29 @@ CREATE TABLE  users (
   role TEXT NOT NULL,
   created_at TEXT DEFAULT (DATETIME()) NOT NULL
 );
---ALTERAR A TABELA para updated_at e created_at
+
 CREATE TABLE posts (
   id TEXT PRIMARY KEY UNIQUE NOT NULL,
-  creator_id TEXT NOT NULL REFERENCES users(id),
+  creator_id TEXT NOT NULL,
   content TEXT NOT NULL,
-  likes INTEGER NOT NULL,
-  dislikes INTEGER NOT NULL,
+  likes INTEGER DEFAULT (0) NOT NULL,
+  dislikes INTEGER DEFAULT (0) NOT NULL,
   createdAt TEXT NOT NULL,
-  updatedAt TEXT NOT NULL
+  updatedAt TEXT NOT NULL,
+  FOREIGN KEY (creator_id) REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
-
 CREATE TABLE likes_dislikes (
-  user_id TEXT NOT NULL REFERENCES users(id),
-  post_id TEXT NOT NULL REFERENCES posts(id),
-  like INTEGER NOT NULL
+  user_id TEXT NOT NULL,
+  post_id TEXT NOT NULL,
+  like INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 SELECT * FROM users;

@@ -1,4 +1,4 @@
-import { UserDB } from "../types";
+import { UserDB } from "../models/User";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class UserDatabase extends BaseDatabase {
@@ -20,14 +20,8 @@ export class UserDatabase extends BaseDatabase {
         const [userDB]: UserDB[] | undefined[] = await BaseDatabase.connection(UserDatabase.TABLE_USERS).where({id});
         return userDB;
     }
-    public async validateUserCredentials(email: string, password: string): Promise<boolean> {
-        const user: UserDB | undefined = await BaseDatabase.connection(UserDatabase.TABLE_USERS)
-            .where({ email, password })
-            //first pois retorna o primeiro caso
-            .first();
-        //aqui é retornado um booleano true caso o user for diferente de undefined
-        //O operador !! é usado para converter o valor de user para um valor booleano,
-        // transformando undefined em false e qualquer objeto em true.
-        return !!user;
+    public async findUserByEmail(email: string): Promise<UserDB | undefined> {
+        const [userDB]: UserDB[] | undefined[] = await BaseDatabase.connection(UserDatabase.TABLE_USERS).where({email});
+        return userDB;
     }
 }

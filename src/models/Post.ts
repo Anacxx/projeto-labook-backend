@@ -19,7 +19,25 @@ export interface PostModel {
         name: string;
     };
 }
-
+export interface postDBWithCreatorName {
+  id: string,
+  creator_id: string,
+  content: string,
+  likes: number,
+  dislikes: number,
+  createdAt: string,
+  updatedAt: string,
+  creator_name: string
+}
+export interface LikeDislikeDB{
+  user_id: string,
+  post_id: string,
+  like: number
+}
+export enum POST_LIKE {
+  ALREADY_LIKED = "ALREADY LIKED",
+  ALREADY_DISLIKED = "ALREADY DISLIKED"
+}
 export class Post {
     constructor(
       private id: string,
@@ -85,9 +103,20 @@ export class Post {
     public setLikes(likes: number): void {
       this.likes = likes;
     }
-  
+    public addLike = (): void => {
+      this.likes++
+    }
+    public removeLike = (): void => {
+      this.likes--
+    }
     public setDislikes(dislikes: number): void {
       this.dislikes = dislikes;
+    }
+    public addDislike = (): void => {
+      this.dislikes++
+    }
+    public removeDislike = (): void => {
+      this.dislikes--
     }
   
     public setCreatedAt(createdAt: string): void {
@@ -97,7 +126,7 @@ export class Post {
     public setUpdatedAt(updatedAt: string): void {
       this.updatedAt = updatedAt;
     }
-    public toPostDB(): PostDB {
+    public toPostDB() {
       return {
         id: this.id,
         creator_id: this.creatorId,
@@ -105,7 +134,7 @@ export class Post {
         likes: this.likes,
         dislikes: this.dislikes,
         createdAt: this.createdAt,
-        updatedAt: this.updatedAt
+        updatedAt: this.updatedAt,
       }
     }
     public toPostModel(): PostModel {
