@@ -1,7 +1,7 @@
 # Projeto Labook
 O Projeto Labook é uma rede social desenvolvida com NodeJS, Typescript, Express e SQLite, com foco em promover interação e conexão entre usuários. Ele permite que os usuários criem, curtam e gerenciem postagens. O projeto abrange conceitos avançados, como autenticação, autorização, roteamento e arquitetura em camadas.
 
-# Conteúdos abordados
+ Conteúdos abordados
 Desenvolvimento backend com NodeJS e Typescript
 Autenticação com tokens JWT
 Armazenamento seguro de senhas usando bcrypt
@@ -10,12 +10,12 @@ Uso do banco de dados SQLite com Knex para gerenciar postagens e usuários
 Implementação de endpoints para cadastro, login, criação, edição e exclusão de postagens, além de curtir e descurtir
 Uso do Postman para testar e documentar os endpoints.
 
-# Configuração e Execução
+ Configuração e Execução
 Clone o repositório e instale as dependências.
 Configure as variáveis de ambiente no arquivo .env.
 Inicie o servidor com npm start.
 
-# Endpoints Exemplos
+ Endpoints Exemplos
 
 POST /users/signup: Cadastro de usuário e retorno de token JWT.
 POST /users/login: Login de usuário e retorno de token JWT.
@@ -35,7 +35,8 @@ Instale as dependências do projeto:
 npm install
 Execute o Projeto:
 npm start
-# Dependências
+
+Dependências
 O projeto utiliza as seguintes principais dependências:
 
 Express: 
