@@ -7,3 +7,4 @@ export class BadRequestError extends BaseError {
         super(400, message)
     }
 }
+
